@@ -1,6 +1,87 @@
-django
-djangorestframework
-django-cors-headers
-psycopg2-binary
-python-dotenv
-dj-database-url
+# Core Django & API
+django>=4.2,<5.0
+djangorestframework>=3.14
+django-cors-headers>=4.0
+psycopg2-binary>=2.9
+python-dotenv>=1.0
+dj-database-url>=2.0
+
+# Production Server (ASGI for WebSocket support)
+gunicorn>=21.0
+daphne>=4.0
+uvicorn[standard]>=0.24
+
+# WebSocket Support for Real-Time GPS Tracking
+channels>=4.0
+channels-redis>=4.1
+
+# Caching (Redis)
+django-redis>=5.3
+hiredis>=2.2
+
+# Database Optimization
+django-db-connection-pool>=1.2
+
+# Task Queue
+celery>=5.3
+redis>=5.0
+kombu>=5.3
+
+# Testing & Quality Assurance
+pytest>=7.4
+pytest-django>=4.5
+pytest-cov>=4.1
+pytest-asyncio>=0.21
+coverage>=7.0
+
+# Code Quality & Linting
+black>=23.0
+flake8>=6.0
+isort>=5.12
+pylint>=2.17
+
+# Security
+bandit>=1.7
+safety>=2.3
+
+# Monitoring & Observability
+django-prometheus>=2.3
+prometheus-client>=0.18
+
+# Optional: API Documentation
+drf-spectacular>=0.26
+
+# Optional: Additional utilities
+python-decouple>=3.8
+requests>=2.31
+
+
+# Production Server
+gunicorn>=21.0
+
+# Testing & Quality Assurance
+pytest>=7.4
+pytest-django>=4.5
+pytest-cov>=4.1
+coverage>=7.0
+
+# Code Quality & Linting
+black>=23.0
+flake8>=6.0
+isort>=5.12
+pylint>=2.17
+
+# Security
+bandit>=1.7
+safety>=2.3
+
+# Optional: Caching & Task Queue
+redis>=4.5
+celery>=5.3
+
+# Optional: API Documentation
+drf-spectacular>=0.26
+
+# Optional: Additional utilities
+python-decouple>=3.8
+requests>=2.31

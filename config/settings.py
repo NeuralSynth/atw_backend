@@ -37,6 +37,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 INSTALLED_APPS = [
+    # Django Channels must be before django.contrib.staticfiles
+    'daphne',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +50,8 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'corsheaders',
+    'channels',
+    'django_prometheus',
 
     # Local Apps
     'users',
@@ -87,14 +92,33 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Database Configuration with Read Replicas
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL')),
 }
+
+# Add read replicas if configured
+if os.environ.get('DATABASE_REPLICA1_URL'):
+    DATABASES['replica1'] = dj_database_url.parse(os.environ.get('DATABASE_REPLICA1_URL'))
+    
+if os.environ.get('DATABASE_REPLICA2_URL'):
+    DATABASES['replica2'] = dj_database_url.parse(os.environ.get('DATABASE_REPLICA2_URL'))
+
+# Database router for read replica support
+if len(DATABASES) > 1:
+    DATABASE_ROUTERS = ['config.db_router.ReadReplicaRouter']
+
+# Database connection settings
+for db in DATABASES.values():
+    db['CONN_MAX_AGE'] = 600  # Keep connections alive for 10 minutes
+    db['OPTIONS'] = db.get('OPTIONS', {})
+    db['OPTIONS']['connect_timeout'] = 10
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -154,3 +178,70 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+# ============================================================================
+# PRODUCTION SETTINGS
+# ============================================================================
+
+# Redis Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.environ.get('REDIS_URL', 'redis://localhost:6379/1'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'SOCKET_CONNECT_TIMEOUT': 5,
+            'SOCKET_TIMEOUT': 5,
+            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
+            'CONNECTION_POOL_KWARGS': {'max_connections': 50}
+        },
+        'KEY_PREFIX': 'atw',
+        'TIMEOUT': 300,  # 5 minutes default
+    }
+}
+
+# Session storage in Redis
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Django Channels Configuration (WebSocket support)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379/0')],
+            'capacity': 1500,  # Maximum messages per channel
+            'expiry': 10,  # Message expiry in seconds
+        },
+    },
+}
+
+# Celery Configuration
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
+
+# Performance Optimizations
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+
+# Compression Middleware (add to MIDDLEWARE if not present)
+if 'django.middleware.gzip.GZipMiddleware' not in MIDDLEWARE:
+    MIDDLEWARE.insert(1, 'django.middleware.gzip.GZipMiddleware')
+
+# Security Settings (enable in production)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
