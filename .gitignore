@@ -1,13 +1,51 @@
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
 
-# Virtual Environment
+# Virtual Environments
 venv/
 .venv/
 env/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+
+# Environment Variables
 .env
+.env.*
+!.env.example
+.envrc
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Static files
+/static/
+staticfiles/
+static_collected/
+/media/
+mediafiles/
+
+# Django migrations (uncomment if you want to ignore migrations)
+# **/migrations/*.py
+# !**/migrations/__init__.py
+
+# Django secret key
+secret_key.txt
+
+# Django session files
+*.session
+
+# Django debug toolbar
+.debug_toolbar/
 
 # Distribution / Packaging
 build/
@@ -22,43 +60,183 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# Logs
-*.log
-server_log.txt
+# PyInstaller
+*.manifest
+*.spec
 
-# Editor / IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-.DS_Store
-
-# Unit test / coverage results
+# Testing & Coverage
 htmlcov/
 .tox/
+.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
+*.py,cover
+.hypothesis/
 .pytest_cache/
+pytest_cache/
+.ruff_cache/
+pytestdebug.log
+test-results/
 
-# Sphinx documentation
-docs/_build/
-
-# MyPy
+# Type Checking & Linting
 .mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
 
-# Django
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+site/
+.doctrees/
+
+# IDEs & Editors
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm / IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+Session.vim
+
+# Emacs
+*~
+\#*\#
+.\#*
+.dir-locals.el
+
+# Eclipse
+.project
+.pydevproject
+.settings/
+
+# Operating System Files
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# PostgreSQL
+*.pgsql
+
+# MySQL
+*.mysql
+
+# Logs & Temporary Files
 *.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/
-staticfiles/
+logs/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*_log.txt
+server_log.txt
 django_server_log.txt
+celery*.log
+gunicorn*.log
+
+# Secrets & Security
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+.secrets/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+*.pid
+
+# Redis
+dump.rdb
+
+# Node.js (if using frontend build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.npm
+.yarn-integrity
+
+# Webpack / Parcel
+.parcel-cache/
+.webpack-cache/
+
+# Cloud & Deployment
+.serverless/
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Elastic Beanstalk
+.elasticbeanstalk/
+
+# Docker
+docker-compose.override.yml
+.dockerignore.bak
+
+# Misc
+.cache/
+.temp/
+.tmp/
+scratch/
+TODO.md
+NOTES.md
