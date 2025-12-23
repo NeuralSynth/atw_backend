@@ -1,0 +1,98 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: atw_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-atw_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - atw_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: atw_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - atw_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atw_backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60 --reload"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-atw_db}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - atw_network
+    restart: unless-stopped
+
+  # Optional: Nginx for production-like setup
+  nginx:
+    image: nginx:alpine
+    container_name: atw_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - web
+    networks:
+      - atw_network
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    name: atw_postgres_data
+  redis_data:
+    name: atw_redis_data
+  static_volume:
+    name: atw_static
+  media_volume:
+    name: atw_media
+
+networks:
+  atw_network:
+    name: atw_network
+    driver: bridge

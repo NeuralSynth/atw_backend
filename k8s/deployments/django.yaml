@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+  namespace: atw-production
+  labels:
+    app: django
+    tier: backend
+spec:
+  replicas: 10 # Right-sized for 10K concurrent users (HPA will scale to 30 max)
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 10%
+  selector:
+    matchLabels:
+      app: django
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: django
+        tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: django
+          image: atw-backend:latest # Replace with your registry/image
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+
+          env:
+            - name: DJANGO_SETTINGS_MODULE
+              value: "config.settings"
+
+          envFrom:
+            - configMapRef:
+                name: django-config
+            - secretRef:
+                name: django-secrets
+
+          resources:
+            requests:
+              cpu: "1000m" # 1 CPU core
+              memory: "2Gi" # 2GB RAM
+            limits:
+              cpu: "2000m" # Max 2 CPU cores
+              memory: "4Gi" # Max 4GB RAM
+
+          # Health checks
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health/
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /api/v1/ready/
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+
+          # Lifecycle hooks
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 15"]
+
+          # Security context
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+
+      # Graceful shutdown
+      terminationGracePeriodSeconds: 60
+
+      # DNS policy for service discovery
+      dnsPolicy: ClusterFirst
+
+      # Restart policy
+      restartPolicy: Always
