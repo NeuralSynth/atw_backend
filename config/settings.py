@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-77r(1zqws98i*&=kl(qt+9+d*%nw+jz=h8304!7^+bq26faidk'
+SECRET_KEY = "django-insecure-77r(1zqws98i*&=kl(qt+9+d*%nw+jz=h8304!7^+bq26faidk"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,69 +30,67 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-import os
-import dj_database_url
-from dotenv import load_dotenv
+import os  # noqa: E402
+
+import dj_database_url  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv()
 
 INSTALLED_APPS = [
     # Django Channels must be before django.contrib.staticfiles
-    'daphne',
-    
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    
+    "daphne",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # Third-party
-    'rest_framework',
-    'corsheaders',
-    'channels',
-    'django_prometheus',
-
+    "rest_framework",
+    "corsheaders",
+    "channels",
+    "django_prometheus",
     # Local Apps
-    'users',
-    'patients',
-    'vehicles',
-    'trips',
-    'ems',
-    'billing',
+    "users",
+    "patients",
+    "vehicles",
+    "trips",
+    "ems",
+    "billing",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-ASGI_APPLICATION = 'config.asgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
 
 
 # Database
@@ -100,33 +98,33 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 # Database Configuration with Read Replicas
 DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL')),
+    "default": dj_database_url.config(default=os.environ.get("DATABASE_URL")),
 }
 
 # Add read replicas if configured
-if os.environ.get('DATABASE_REPLICA1_URL'):
-    DATABASES['replica1'] = dj_database_url.parse(os.environ.get('DATABASE_REPLICA1_URL'))
-    
-if os.environ.get('DATABASE_REPLICA2_URL'):
-    DATABASES['replica2'] = dj_database_url.parse(os.environ.get('DATABASE_REPLICA2_URL'))
+if os.environ.get("DATABASE_REPLICA1_URL"):
+    DATABASES["replica1"] = dj_database_url.parse(os.environ.get("DATABASE_REPLICA1_URL"))
+
+if os.environ.get("DATABASE_REPLICA2_URL"):
+    DATABASES["replica2"] = dj_database_url.parse(os.environ.get("DATABASE_REPLICA2_URL"))
 
 # Database router for read replica support
 if len(DATABASES) > 1:
-    DATABASE_ROUTERS = ['config.db_router.ReadReplicaRouter']
+    DATABASE_ROUTERS = ["config.db_router.ReadReplicaRouter"]
 
 # Database connection settings
 for db in DATABASES.values():
-    db['CONN_MAX_AGE'] = 600  # Keep connections alive for 10 minutes
-    db['OPTIONS'] = db.get('OPTIONS', {})
-    db['OPTIONS']['connect_timeout'] = 10
+    db["CONN_MAX_AGE"] = 600  # Keep connections alive for 10 minutes
+    db["OPTIONS"] = db.get("OPTIONS", {})
+    db["OPTIONS"]["connect_timeout"] = 10
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
     ],
 }
 
@@ -141,16 +139,16 @@ CORS_ALLOWED_ORIGINS = [
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -158,9 +156,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -170,14 +168,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 # ============================================================================
 # PRODUCTION SETTINGS
@@ -185,43 +183,43 @@ AUTH_USER_MODEL = 'users.User'
 
 # Redis Cache Configuration
 CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_URL', 'redis://localhost:6379/1'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'SOCKET_CONNECT_TIMEOUT': 5,
-            'SOCKET_TIMEOUT': 5,
-            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
-            'CONNECTION_POOL_KWARGS': {'max_connections': 50}
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.environ.get("REDIS_URL", "redis://localhost:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 50},
         },
-        'KEY_PREFIX': 'atw',
-        'TIMEOUT': 300,  # 5 minutes default
+        "KEY_PREFIX": "atw",
+        "TIMEOUT": 300,  # 5 minutes default
     }
 }
 
 # Session storage in Redis
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 # Django Channels Configuration (WebSocket support)
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379/0')],
-            'capacity': 1500,  # Maximum messages per channel
-            'expiry': 10,  # Message expiry in seconds
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL", "redis://localhost:6379/0")],
+            "capacity": 1500,  # Maximum messages per channel
+            "expiry": 10,  # Message expiry in seconds
         },
     },
 }
 
 # Celery Configuration
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/1')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
@@ -231,8 +229,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 
 # Compression Middleware (add to MIDDLEWARE if not present)
-if 'django.middleware.gzip.GZipMiddleware' not in MIDDLEWARE:
-    MIDDLEWARE.insert(1, 'django.middleware.gzip.GZipMiddleware')
+if "django.middleware.gzip.GZipMiddleware" not in MIDDLEWARE:
+    MIDDLEWARE.insert(1, "django.middleware.gzip.GZipMiddleware")
 
 # Security Settings (enable in production)
 if not DEBUG:
@@ -241,7 +239,7 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = "DENY"
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
