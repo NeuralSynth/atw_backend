@@ -6,7 +6,7 @@ Provides 3-5 second GPS updates to connected clients.
 
 import json
 
-from asgiref.sync import sync_to_async
+from asgiref.sync import sync_to_async  # noqa: F401
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 

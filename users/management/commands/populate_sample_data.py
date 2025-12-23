@@ -460,9 +460,10 @@ class Command(BaseCommand):
         self.stdout.write(f"Vehicles: {Vehicle.objects.count()}")
         self.stdout.write(f"Trips: {Trip.objects.count()}")
         self.stdout.write(f'  - Pending: {Trip.objects.filter(status="pending").count()}')
-        self.stdout.write(
-            f'  - In Progress: {Trip.objects.filter(status__in=["assigned", "en_route", "at_pickup", "in_transit", "arrived"]).count()}'
-        )
+        in_progress_count = Trip.objects.filter(
+            status__in=["assigned", "en_route", "at_pickup", "in_transit", "arrived"]
+        ).count()
+        self.stdout.write(f"  - In Progress: {in_progress_count}")
         self.stdout.write(f'  - Completed: {Trip.objects.filter(status="completed").count()}')
         self.stdout.write(f'  - Cancelled: {Trip.objects.filter(status="cancelled").count()}')
         self.stdout.write(f"Chat Messages: {ChatMessage.objects.count()}")
