@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+
 class User(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = "Admin", _("Admin")
@@ -17,16 +18,17 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.ADMIN)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.ACTIVE)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
-    
+
     # We can remove username requirement if we want email login, but forcing username=email is easier for now
     # or just keep standard django username. Let's keep standard for simplicity unless SRS forces email login.
     # SRS implies login, usually email. Let's ensure email is unique.
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_("email address"), unique=True)
 
-    REQUIRED_FIELDS = ['email', 'role']
+    REQUIRED_FIELDS = ["email", "role"]
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+
 
 class Company(models.Model):
     class Type(models.TextChoices):

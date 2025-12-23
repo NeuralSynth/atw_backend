@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
 # Use string reference for foreign keys to avoid circular imports during startup if practical,
 # but direct import is okay if structure is clean. String ref is safer.
+
 
 class Vehicle(models.Model):
     class Type(models.TextChoices):
@@ -22,15 +24,12 @@ class Vehicle(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.AVAILABLE)
     current_location = models.CharField(max_length=255, blank=True, null=True)
     odometer_reading = models.FloatField(blank=True, null=True)
-    
+
     # ForeignKey to Company in 'users' app
     vendor_company = models.ForeignKey(
-        'users.Company', 
-        on_delete=models.CASCADE, 
-        related_name='vehicles',
-        limit_choices_to={'company_type': 'vendor'}
+        "users.Company", on_delete=models.CASCADE, related_name="vehicles", limit_choices_to={"company_type": "vendor"}
     )
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
