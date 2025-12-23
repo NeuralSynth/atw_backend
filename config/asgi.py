@@ -14,13 +14,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 # Initialize Django ASGI application early (before importing Channels)
 django_asgi_app = get_asgi_application()
 
-from channels.auth import AuthMiddlewareStack
+from channels.auth import AuthMiddlewareStack  # noqa: E402
 
 # Import Channels components after Django setup
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.security.websocket import AllowedHostsOriginValidator
+from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
+from channels.security.websocket import AllowedHostsOriginValidator  # noqa: E402
 
-import trips.routing
+import trips.routing  # noqa: E402
 
 # ASGI application with WebSocket support
 application = ProtocolTypeRouter(

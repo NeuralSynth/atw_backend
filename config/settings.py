@@ -30,10 +30,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-import os
+import os  # noqa: E402
 
-import dj_database_url
-from dotenv import load_dotenv
+import dj_database_url  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv()
 
