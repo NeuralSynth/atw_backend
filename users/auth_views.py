@@ -1,9 +1,9 @@
+from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.contrib.auth import authenticate
 
 
 @api_view(["POST"])
@@ -11,7 +11,7 @@ from django.contrib.auth import authenticate
 def login(request):
     """
     Login endpoint - returns authentication token
-    
+
     POST /api/v1/auth/login/
     Body: {"username": "admin", "password": "admin123"}
     Returns: {"token": "abc123...", "user_id": 1, "username": "admin"}
@@ -28,9 +28,7 @@ def login(request):
     user = authenticate(username=username, password=password)
 
     if not user:
-        return Response(
-            {"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
     # Get or create token
     token, created = Token.objects.get_or_create(user=user)
@@ -50,7 +48,7 @@ def login(request):
 def logout(request):
     """
     Logout endpoint - deletes authentication token
-    
+
     POST /api/v1/auth/logout/
     Headers: Authorization: Token abc123...
     """
@@ -66,7 +64,7 @@ def logout(request):
 def user_profile(request):
     """
     Get current user profile
-    
+
     GET /api/v1/auth/profile/
     Headers: Authorization: Token abc123...
     """
