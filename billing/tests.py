@@ -2,18 +2,19 @@
 Tests for billing and invoice management - Fixed with correct Trip fields.
 """
 
+from decimal import Decimal
+
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from rest_framework.test import APIClient
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from decimal import Decimal
+from rest_framework.test import APIClient
 
-from billing.models import Invoice, Contract
-from users.models import User, Company
+from billing.models import Contract, Invoice
 from patients.models import Patient
 from trips.models import Trip
+from users.models import Company, User
 
 
 class InvoiceViewSetTestCase(TestCase):

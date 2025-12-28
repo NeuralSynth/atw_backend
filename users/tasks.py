@@ -108,7 +108,8 @@ def send_trip_assignment_notification(trip_id, driver_id):
 
     try:
         trip = Trip.objects.select_related("patient").get(id=trip_id)
-        driver = User.objects.get(id=driver_id)
+        # The 'driver' variable was fetched but not used.
+        # driver = User.objects.get(id=driver_id)
 
         message = f"You have been assigned to Trip #{trip_id}. "
         message += f"Pickup: {trip.pickup_location}, Dropoff: {trip.dropoff_location}. "
@@ -136,10 +137,10 @@ def send_daily_digest(user_id):
     Returns:
         Success or error message
     """
-    from users.models import User
-    from trips.models import Trip
     from django.utils import timezone
-    from datetime import timedelta
+
+    from trips.models import Trip
+    from users.models import User
 
     try:
         user = User.objects.get(id=user_id)

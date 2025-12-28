@@ -4,14 +4,14 @@ Tests for EMS compliance and reporting - Fixed with correct Trip fields.
 
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework.test import APIClient
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
 from ems.models import EMSReport
-from users.models import User
-from trips.models import Trip
 from patients.models import Patient
+from trips.models import Trip
+from users.models import User
 
 
 class EMSReportTestCase(TestCase):

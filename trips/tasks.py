@@ -4,11 +4,12 @@ Celery background tasks for trip management.
 Handles GPS tracking, trip monitoring, and cleanup operations.
 """
 
+from datetime import timedelta
+
+from asgiref.sync import async_to_sync
 from celery import shared_task
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 from django.utils import timezone
-from datetime import timedelta
 
 
 @shared_task(queue="high_priority")
@@ -137,8 +138,8 @@ def process_trip_completion(trip_id):
     Args:
         trip_id: ID of the completed trip
     """
-    from trips.models import Trip
     from billing.tasks import generate_invoice
+    from trips.models import Trip
     from users.tasks import send_notification
 
     try:

@@ -135,7 +135,10 @@ REST_FRAMEWORK = {
 # drf-spectacular settings for API documentation
 SPECTACULAR_SETTINGS = {
     "TITLE": "ATW Backend API",
-    "DESCRIPTION": "All The Way Transportation System - Production-ready backend service for ambulance dispatch, patient records, real-time vehicle tracking, medical compliance, and billing operations.",
+    "DESCRIPTION": (
+        "All The Way Transportation System - Production-ready backend service for "
+        "ambulance dispatch, patient records, real-time vehicle tracking, medical compliance, and billing operations."
+    ),
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "COMPONENT_SPLIT_REQUEST": True,

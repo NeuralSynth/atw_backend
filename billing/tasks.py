@@ -4,9 +4,10 @@ Celery background tasks for billing operations.
 Handles invoice generation and email notifications.
 """
 
+from decimal import Decimal
+
 from celery import shared_task
 from django.utils import timezone
-from decimal import Decimal
 
 
 @shared_task(queue="normal")
@@ -20,8 +21,8 @@ def generate_invoice(trip_id):
     Returns:
         Invoice ID if successful, error message otherwise
     """
-    from trips.models import Trip
     from billing.models import Invoice
+    from trips.models import Trip
 
     try:
         trip = Trip.objects.select_related("patient", "driver", "vehicle").get(id=trip_id)
@@ -85,7 +86,8 @@ def send_invoice_email(invoice_id):
 
         # TODO: Implement actual email sending
         # For now, just log the action
-        subject = f"Invoice #{invoice.invoice_number} - ATW Transportation"
+        # Email subject for reference
+        _ = f"Invoice #{invoice.invoice_number} - ATW Transportation"  # noqa: F841
         recipient = invoice.patient.email
 
         # Placeholder - replace with actual email service

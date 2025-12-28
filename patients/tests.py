@@ -4,9 +4,9 @@ Tests for patient management - Fixed to match actual Patient model.
 
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework.test import APIClient
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APIClient
 
 from patients.models import Patient
 from users.models import User
