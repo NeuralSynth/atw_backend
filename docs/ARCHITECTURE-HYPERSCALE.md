@@ -188,7 +188,29 @@ EU-WEST: Shards 17-33
 APAC: Shards 34-49
 ```
 
-### 5. Message Queue
+### 5. Health Monitoring Layer
+
+#### Kubernetes Health Probes
+- **Liveness Probe**: `/api/v1/health/`
+  - Simple ping to verify process is alive
+  - Interval: 10 seconds
+  - Timeout: 5 seconds
+  - Failure threshold: 3
+
+- **Readiness Probe**: `/api/v1/ready/`
+  - Checks database connectivity
+  - Checks Redis connectivity
+  - Interval: 5 seconds
+  - Timeout: 3 seconds
+  - Success threshold: 1
+
+#### Monitoring Stack
+- **Prometheus**: Metrics collection
+- **Grafana**: Visualization dashboards
+- **Jaeger**: Distributed tracing
+- **AlertManager**: Alert routing and deduplication
+
+### 6. Message Queue & Task Processing
 
 #### RabbitMQ/Kafka Cluster
 - **Purpose**: Async task processing
@@ -197,12 +219,50 @@ APAC: Shards 34-49
 
 #### Celery Workers
 - **Replicas**: 500+ worker pods
-- **Queues**:
-  - `high_priority`: Emergency dispatch
-  - `normal`: Regular tasks
-  - `low_priority`: Reports, analytics
+- **Queue Configuration**:
+  ```python
+  high_priority:    # Emergency dispatch, GPS updates
+    - broadcast_gps_update
+    - broadcast_trip_status
+    
+  normal:           # Regular operations
+    - process_trip_completion
+    - generate_invoice
+    
+  low_priority:     # Non-urgent tasks
+    - send_notification
+    - send_welcome_email
+    - cleanup_old_gps_data
+  ```
 
-### 6. Service Mesh
+#### Periodic Tasks (Celery Beat)
+- **GPS Cleanup**: Every hour
+- **Trip Timeout Check**: Every 5 minutes
+- **Overdue Invoices**: Daily at 2 AM
+- **Daily Digests**: Every morning at 8 AM
+
+#### Task Scaling Strategy
+```yaml
+High Priority Workers:
+  Min replicas: 100
+  Max replicas: 1000
+  Scale based on: Queue depth
+  Target queue depth: < 100 messages
+
+Normal Priority Workers:
+  Min replicas: 50
+  Max replicas: 500
+  Scale based on: Queue depth + CPU
+  Target queue depth: < 500 messages
+
+Low Priority Workers:
+  Min replicas: 20
+  Max replicas: 200
+  Scale based on: Queue depth
+  Target queue depth: < 1000 messages
+```
+
+### 7. Service Mesh
 
 #### Istio/Linkerd
 - **Features**:
