@@ -1,5 +1,5 @@
 """
-Tests for vehicle management.
+Tests for vehicle management - Fixed to match actual Vehicle model.
 """
 
 from django.test import TestCase
@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 
 from vehicles.models import Vehicle
-from users.models import User
+from users.models import User, Company
 
 
 class VehicleViewSetTestCase(TestCase):
@@ -26,33 +26,36 @@ class VehicleViewSetTestCase(TestCase):
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
 
+        # Create a vendor company (required for vehicle)
+        self.company = Company.objects.create(
+            company_name="Test Vendor",
+            company_type=Company.Type.VENDOR,
+        )
+
     def test_create_vehicle(self):
-        """Test creating a new vehicle."""
+        """Test creating a new vehicle - API test."""
         url = reverse("vehicle-list")
         data = {
-            "vehicle_number": "AMB-101",
-            "vehicle_type": "ambulance",
-            "make": "Ford",
-            "model": "Transit",
-            "year": 2023,
-            "status": "available",
+            "plate_number": "AMB-101",
+            "type": Vehicle.Type.BASIC,
+            "vendor_company": self.company.id,
         }
         response = self.client.post(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Vehicle.objects.filter(vehicle_number="AMB-101").exists())
+        self.assertTrue(Vehicle.objects.filter(plate_number="AMB-101").exists())
 
     def test_list_vehicles(self):
         """Test listing all vehicles."""
         Vehicle.objects.create(
-            vehicle_number="AMB-201",
-            vehicle_type="ambulance",
-            status="available",
+            plate_number="AMB-201",
+            type=Vehicle.Type.BASIC,
+            vendor_company=self.company,
         )
         Vehicle.objects.create(
-            vehicle_number="AMB-202",
-            vehicle_type="ambulance",
-            status="in_use",
+            plate_number="AMB-202",
+            type=Vehicle.Type.ADVANCED,
+            vendor_company=self.company,
         )
 
         url = reverse("vehicle-list")
@@ -64,33 +67,30 @@ class VehicleViewSetTestCase(TestCase):
     def test_update_vehicle_status(self):
         """Test updating vehicle status."""
         vehicle = Vehicle.objects.create(
-            vehicle_number="AMB-301",
-            vehicle_type="ambulance",
-            status="available",
+            plate_number="AMB-301",
+            type=Vehicle.Type.BASIC,
+            vendor_company=self.company,
         )
 
         url = reverse("vehicle-detail", kwargs={"pk": vehicle.pk})
-        data = {"status": "in_use"}
+        data = {"status": Vehicle.Status.IN_TRIP}
         response = self.client.patch(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         vehicle.refresh_from_db()
-        self.assertEqual(vehicle.status, "in_use")
+        self.assertEqual(vehicle.status, Vehicle.Status.IN_TRIP)
 
     def test_get_vehicle_detail(self):
         """Test retrieving vehicle details."""
         vehicle = Vehicle.objects.create(
-            vehicle_number="AMB-401",
-            vehicle_type="ambulance",
-            make="Mercedes",
-            model="Sprinter",
-            year=2022,
-            status="available",
+            plate_number="AMB-401",
+            type=Vehicle.Type.ICU,
+            model="Mercedes Sprinter",
+            vendor_company=self.company,
         )
 
         url = reverse("vehicle-detail", kwargs={"pk": vehicle.pk})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["vehicle_number"], "AMB-401")
-        self.assertEqual(response.data["make"], "Mercedes")
+        self.assertEqual(response.data["plate_number"], "AMB-401")

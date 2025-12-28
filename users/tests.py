@@ -1,5 +1,5 @@
 """
-Tests for user authentication and management.
+Tests for user authentication and management - Fixed to match actual models.
 """
 
 from django.test import TestCase
@@ -139,9 +139,7 @@ class CompanyTestCase(TestCase):
     def setUp(self):
         """Set up test data."""
         self.client = APIClient()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
         self.token = Token.objects.create(user=self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
 
@@ -149,23 +147,30 @@ class CompanyTestCase(TestCase):
         """Test creating a company."""
         url = reverse("company-list")
         data = {
-            "name": "Test Company",
-            "phone": "+1234567890",
+            "company_name": "Test Company",
+            "company_type": Company.Type.CLIENT,
+            "phone_number": "+1234567890",
             "email": "company@example.com",
             "address": "123 Test St",
         }
         response = self.client.post(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Company.objects.filter(name="Test Company").exists())
+        self.assertTrue(Company.objects.filter(company_name="Test Company").exists())
 
     def test_list_companies(self):
         """Test listing companies."""
         Company.objects.create(
-            name="Company A", phone="+1111111111", email="a@example.com"
+            company_name="Company A",
+            company_type=Company.Type.CLIENT,
+            phone_number="+1111111111",
+            email="a@example.com",
         )
         Company.objects.create(
-            name="Company B", phone="+2222222222", email="b@example.com"
+            company_name="Company B",
+            company_type=Company.Type.VENDOR,
+            phone_number="+2222222222",
+            email="b@example.com",
         )
 
         url = reverse("company-list")
