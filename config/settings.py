@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "channels",
     "django_prometheus",
+    "drf_spectacular",  # API documentation
     # Local Apps
     "users",
     "patients",
@@ -128,6 +129,20 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",  # For browsable API
         "rest_framework.authentication.BasicAuthentication",  # For testing
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# drf-spectacular settings for API documentation
+SPECTACULAR_SETTINGS = {
+    "TITLE": "ATW Backend API",
+    "DESCRIPTION": (
+        "All The Way Transportation System - Production-ready backend service for "
+        "ambulance dispatch, patient records, real-time vehicle tracking, medical compliance, and billing operations."
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": "/api/v1/",
 }
 
 CORS_ALLOWED_ORIGINS = [
